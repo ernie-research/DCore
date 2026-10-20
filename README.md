@@ -62,9 +62,9 @@ DCore is a strong baseline distilled from the analysis. Other recipes lead in so
 
 **Entropy** measures next-token uncertainty. Even two coding tasks can differ greatly, so domain labels do not fully describe drafting difficulty.
 
-**Figure 12** looks inside decoding paths across three drafter families, both targets, two budgets, and the temperature settings shown. Accepted prefixes tend to have lower target entropy than the rejected position ending the path.
+**The full entropy heatmaps** look inside decoding paths across three drafter families, both targets, two budgets, and the temperature settings shown. Accepted prefixes tend to have lower target entropy than the rejected position ending the path.
 
-[![Figure 12: Target-entropy heatmaps across EAGLE-3 chain decoding, DFlash, and DSpark, with both targets and budgets.](assets/figure-12.png)](assets/figure-12.png)
+[![Full target-entropy heatmaps across EAGLE-3 chain decoding, DFlash, and DSpark, with both targets and budgets.](assets/figure-12.png)](assets/figure-12.png)
 
 *Brighter cells indicate greater target uncertainty; black borders mark rejected endpoints. Each panel contains a budget-16 grid and a budget-8 inset. Top rows show Qwen3-4B at 0|0 and 1|1; bottom rows show Qwen3-8B at 0|0 and 1|0. Gray bars show step frequencies. Click to enlarge.*
 
