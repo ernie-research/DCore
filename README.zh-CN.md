@@ -1,4 +1,4 @@
-# SpecLab
+# 本仓库
 
 [English](README.md) | **中文介绍**
 
