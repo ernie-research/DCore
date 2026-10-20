@@ -1,4 +1,4 @@
-# This Repo
+# When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding
 
 **English** | [中文介绍](README.zh-CN.md)
 

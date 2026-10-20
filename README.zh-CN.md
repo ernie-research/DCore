@@ -1,4 +1,4 @@
-# 本仓库
+# When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding
 
 [English](README.md) | **中文介绍**
 
