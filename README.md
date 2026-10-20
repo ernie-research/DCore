@@ -1,5 +1,7 @@
 # When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding
 
+[![arXiv](https://img.shields.io/badge/arXiv-2610.24993-b31b1b.svg)](https://arxiv.org/abs/2610.24993)
+
 **English** | [中文介绍](README.zh-CN.md)
 
 This repository accompanies **When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding**.
@@ -93,6 +95,22 @@ The block-based comparisons use budget-specific recipes; EAGLE-3's tree and chai
 A larger budget can help at low load yet lose to a smaller budget as concurrency grows. DCore remains competitive under greedy drafting, while semi-autoregressive methods become more competitive under sampled drafting. The preferred recipe and budget therefore depend on how the model is served, as well as what it generates.
 
 **The practical lesson:** first establish a common comparison, then seek acceptance improvements with little inference overhead, and finally select the drafter and budget together using end-to-end throughput under the intended workload and serving conditions.
+
+## Citation
+
+If you find our paper or this repository useful for your research, please consider citing:
+
+```bibtex
+@misc{long2026doesbetteracceptancepay,
+  title={When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding},
+  author={Yongchao Long and Chunrui Zheng and Yuxuan Zhou and Guangkun Nie and Tian-Chi Ma and Chao Pang and Shuohuan Wang and Yuchen Ding and Xianbin Wen and Dianhai Yu and Junyuan Shang and Yuxi Zhou and Shenda Hong},
+  year={2026},
+  eprint={2610.24993},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2610.24993}
+}
+```
 
 ## Acknowledgments
 

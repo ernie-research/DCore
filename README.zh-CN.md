@@ -1,5 +1,7 @@
 # When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding
 
+[![arXiv](https://img.shields.io/badge/arXiv-2610.24993-b31b1b.svg)](https://arxiv.org/abs/2610.24993)
+
 [English](README.md) | **中文介绍**
 
 本仓库对应论文 **When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding**（更高的接收长度，何时值得？一项投机解码的受控研究）。
@@ -93,6 +95,22 @@ DCore 是从分析中提炼出的强基线，而其他方法在部分设定下�
 较大预算在低负载时可能更快，但随着并发增加，可能被较小预算反超。DCore 在贪心草稿设定下保持竞争力，半自回归方法在采样草稿设定下更具竞争力。因此，选择草稿方法和预算时，既要看模型生成什么，也要看它如何被服务。
 
 **实际启示是：** 先建立共同的比较基准，再寻找几乎不增加推理开销的接收长度改进，最后根据实际任务和服务条件下的端到端吞吐量，联合选择草稿方法与预算。
+
+## 引用
+
+如果我们的论文或本仓库对您的研究有所帮助，欢迎引用：
+
+```bibtex
+@misc{long2026doesbetteracceptancepay,
+  title={When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding},
+  author={Yongchao Long and Chunrui Zheng and Yuxuan Zhou and Guangkun Nie and Tian-Chi Ma and Chao Pang and Shuohuan Wang and Yuchen Ding and Xianbin Wen and Dianhai Yu and Junyuan Shang and Yuxi Zhou and Shenda Hong},
+  year={2026},
+  eprint={2610.24993},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2610.24993}
+}
+```
 
 ## 致谢
 
