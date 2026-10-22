@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Speculative Decoding Race</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Speculative Decoding Race</h1>
+    <span id="subtitle"></span>
+    <span id="timer" aria-label="elapsed time">0.00 s</span>
+  </header>
+
+  <div id="top">
+    <section id="controls" aria-label="Controls">
+      <div class="row">
+        <label>Target <select id="model"></select></label>
+        <label>Budget <select id="budget"></select></label>
+        <span class="row" role="group" aria-label="Temperature target:draft">
+          <span style="color:var(--muted)">T target:draft</span>
+          <span class="seg" id="preset"></span>
+        </span>
+        <label>Max new tokens <input id="maxTokens" type="number" min="1" max="32768" value="8192"></label>
+        <label>Seed <input id="seed" type="number" value="0"></label>
+        <label><input id="baseline" type="checkbox" checked> Target-only baseline (for speedup)</label>
+        <label title="After the race, score every committed token with the target model (one prefill per method)"><input id="entropy" type="checkbox" checked> Score target entropy</label>
+        <label title="Underline every token with its target entropy (E toggles)"><input id="entShow" type="checkbox" checked> Show entropy (E)</label>
+      </div>
+      <div class="row methods-pick" id="methodsPick" role="group" aria-label="Methods"></div>
+      <div class="row">
+        <label>Benchmark <select id="bench"></select></label>
+        <label>Question <select id="q"></select></label>
+      </div>
+      <textarea id="prompt" aria-label="Prompt" placeholder="Enter a prompt (thinking mode is disabled)"></textarea>
+      <div class="row">
+        <button id="runBtn" class="primary">Run live</button>
+        <button id="cancelBtn" disabled>Cancel</button>
+        <button id="replayBtn" disabled>Replay race</button>
+        <label>Speed
+          <select id="speed">
+            <option value="0.05">0.05×</option><option value="0.1">0.1×</option><option value="0.25">0.25×</option><option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option><option value="2">2×</option>
+          </select>
+        </label>
+        <label>Recording <select id="recSelect"><option value="">—</option></select></label>
+        <button id="loadBtn">Load</button>
+        <button id="refreshBtn" title="Refresh recordings">↻</button>
+        <label>Layout
+          <select id="layout"><option value="grid">grid 4×2</option><option value="row">single row</option></select>
+        </label>
+        <label title="Burst when a verify step accepts at least this share of the draft window (F toggles)">Fireworks
+          <select id="fx">
+            <option value="0">off</option>
+            <option value="0.0001">any accepted</option>
+            <option value="0.25">≥ 25% of window</option>
+            <option value="0.5" selected>≥ 50% of window</option>
+            <option value="0.75">≥ 75% of window</option>
+          </select>
+        </label>
+        <button id="stopServersBtn" title="Shut down resident sglang servers">Free GPU</button>
+        <button id="presentBtn" title="Hide controls (press H to toggle)">Presentation (H)</button>
+      </div>
+      <div id="msg" role="status" aria-live="polite"></div>
+    </section>
+
+    <section id="board" aria-label="Throughput leaderboard"></section>
+  </div>
+
+  <div id="legend" aria-label="Legend">
+    <span><span class="tok demo-acc">accepted</span><span class="tok demo-acc2">draft</span> tokens accepted by the target (shade alternates per verify step)</span>
+    <span><span class="tok demo-bonus">bonus</span> token sampled by the target at each verify step</span>
+    <span>τ = tokens committed per verify step</span>
+    <span>firework size ∝ drafts accepted in one step / (window − 1)</span>
+    <span class="ent-scale">underline = target entropy (T=1, nats): 0 <span class="ent-bar"></span> ≥ 4 · boxed = target's bonus token (sits at the rejection point unless the whole window was accepted)</span>
+  </div>
+
+  <main id="grid" aria-label="Method outputs"></main>
+
+  <script src="/static/fireworks.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

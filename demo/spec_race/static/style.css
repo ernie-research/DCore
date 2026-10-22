@@ -1,0 +1,149 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e222b;
+  --border: #2a2f3a;
+  --text: #e6e8eb;
+  --muted: #9aa3ad;
+  --accent: #e15759;
+  --hl: #6ea8fe;   /* unified highlight: accepted drafts, speedup, tok/s bar */
+  --cols: 4;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+* { box-sizing: border-box; }
+/* The page is a fixed viewport-height column: the whole app always fits the
+   browser window (no page scroll); only the inner output panes scroll. */
+body {
+  margin: 0; background: var(--bg); color: var(--text); font-size: 14px;
+  height: 100vh; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+header { flex: none; display: flex; align-items: baseline; gap: 16px; padding: 12px 20px 4px; flex-wrap: wrap; }
+header h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
+#subtitle { color: var(--muted); font-size: 15px; }
+#timer { margin-left: auto; font: 600 20px/1 ui-monospace, Menlo, Consolas, monospace; color: var(--muted); }
+#timer.running { color: var(--text); }
+
+/* Controls (left) and the throughput board (right) share one horizontal row
+   so the method outputs below get the full remaining viewport height. */
+#top {
+  flex: 0 1 auto; min-height: 0;
+  display: flex; align-items: stretch; gap: 16px;
+  padding: 6px 20px 10px;
+}
+#controls {
+  flex: 1.2 1 0; min-width: 0;
+  display: flex; flex-direction: column; gap: 8px;
+  overflow-y: auto;  /* scrolls itself on short windows */
+}
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.row label { color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+select, input[type=number], textarea, button {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 8px; font: inherit;
+}
+input[type=number] { width: 84px; }
+textarea { width: 100%; min-height: 56px; resize: vertical; }
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: #4b5463; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid #8ab4f8; outline-offset: 1px;
+}
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; padding: 5px 12px; }
+.seg button[aria-pressed=true] { background: #3a4150; font-weight: 600; }
+.methods-pick label { color: var(--text); }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--c); }
+#msg { color: var(--muted); min-height: 1.2em; }
+#msg.err { color: #ff8a80; }
+
+#legend { flex: none; display: flex; gap: 18px; padding: 0 20px 8px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+#legend .tok { padding: 0 3px; border-radius: 3px; }
+#legend .demo-acc { background: color-mix(in srgb, var(--hl) 26%, transparent); color: var(--text); }
+#legend .demo-acc2 { background: color-mix(in srgb, var(--hl) 46%, transparent); color: var(--text); }
+#legend .demo-bonus { color: var(--text); border-bottom: 2px solid #c8ccd2; }
+
+/* Leaderboard: one row per method, two overlaid bars per track.
+   Wide pale bar  = τ (tokens accepted per verify step, back layer)
+   thin bright bar = tok/s (throughput, front layer; never hides the wide bar) */
+#board {
+  flex: 1 1 0; min-width: 360px; min-height: 0; overflow: hidden;
+  padding: 8px 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  display: grid; grid-template-columns: 96px 1fr 132px; gap: 4px 10px;
+  align-content: center; align-items: center;
+}
+#board .cap { grid-column: 1 / -1; font: 11px/1 ui-monospace, Menlo, Consolas, monospace;
+  color: var(--muted); letter-spacing: .3px; padding-bottom: 2px; }
+#board .cap i { display: inline-block; vertical-align: middle; margin-right: 4px; border-radius: 2px; }
+#board .cap .sw-tps { width: 16px; height: 6px; background: var(--hl); }
+#board .cap .sw-tau { width: 16px; height: 12px; background: rgba(150, 160, 180, .35); }
+#board .name { font-weight: 600; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#board .track { position: relative; height: 16px; background: var(--panel-2); border-radius: 8px; overflow: hidden; }
+#board .bar { position: absolute; top: 0; bottom: 0; left: 0; width: 0;
+  background: rgba(150, 160, 180, .35); border-radius: 8px; transition: width .12s linear; }
+#board .bar.tps { top: 50%; bottom: auto; height: 7px; transform: translateY(-50%);
+  background: var(--hl); border-radius: 4px; box-shadow: 0 0 6px -1px var(--hl); }
+#board .val { font: 13px ui-monospace, Menlo, Consolas, monospace; color: var(--muted); white-space: nowrap; }
+#board .val b { color: var(--text); }
+#board .val .sub { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+/* The grid takes all viewport space left after header/controls/legend/board;
+   its rows split that height equally and each cell's .out pane scrolls. */
+#grid {
+  flex: 1 1 0; min-height: 0; overflow: hidden;
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr); gap: 10px; padding: 0 20px 20px;
+}
+.cell { background: var(--panel); border: 1px solid var(--border); border-top: 3px solid var(--c); border-radius: 8px;
+  display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.cell.ours { box-shadow: 0 0 0 1px var(--c), 0 0 18px -6px var(--c); }
+.cell-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px 4px; }
+.cell-head .title { font-weight: 700; font-size: 16px; }
+.cell-head .rank { margin-left: auto; font-weight: 700; color: var(--c); font-size: 15px; }
+.chip { font-size: 12px; color: var(--muted); padding: 1px 6px; border: 1px solid var(--border); border-radius: 10px;
+  max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip.running { color: #a5d6a7; border-color: #3c6e47; }
+.chip.error { color: #ff8a80; border-color: #7a3b3b; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 2px 10px 6px;
+  font: 12px ui-monospace, Menlo, Consolas, monospace; color: var(--muted); }
+.stats b { display: block; color: var(--text); font-size: 15px; }
+.stats .speedup b { color: var(--hl); }
+.out { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 10px 12px; border-top: 1px solid var(--border);
+  white-space: pre-wrap; word-break: break-word; line-height: 1.55; font-size: 13.5px;
+  contain: layout paint; }
+.out .err { color: #ff8a80; }
+/* Token highlight uses one neutral accent for every method (shade alternates
+   per verify step); only the cell's top stripe keeps the method colour. */
+.step .acc { background: color-mix(in srgb, var(--hl) 26%, transparent); border-radius: 2px; }
+.step.alt .acc { background: color-mix(in srgb, var(--hl) 46%, transparent); }
+.step .bonus { border-bottom: 2px solid rgba(200, 204, 210, .7); }
+.step .merged { background: repeating-linear-gradient(45deg, rgba(148, 158, 172, .28) 0 4px, transparent 4px 8px); }
+/* Fade-in via opacity, not filter: with 8 cells streaming, a brightness filter
+   animation on every .step keeps rasterising composited layers all the time,
+   which was a major source of jank. Opacity rides the compositor cheaply. */
+.step.new { animation: pop .35s ease-out; }
+@keyframes pop { from { opacity: .35; } }
+
+/* target entropy: coloured underline per token (purple = confident, bright green = uncertain) */
+body.ent .step span[data-h] {
+  text-decoration: underline 3px var(--h); text-underline-offset: 4px; text-decoration-skip-ink: none;
+}
+body.ent .step .bonus[data-h] { border-bottom: 0; box-shadow: inset 0 0 0 1px rgba(200, 204, 210, .55); border-radius: 2px; }
+body.ent .out { line-height: 1.7; }
+.ent-stats { padding: 0 10px 6px; font: 12px ui-monospace, Menlo, Consolas, monospace; color: var(--muted); }
+.ent-stats[hidden], body:not(.ent) .ent-stats { display: none; }
+.ent-stats b { color: var(--text); margin-left: 3px; }
+.ent-stats i { display: inline-block; width: 10px; height: 3px; margin-left: 4px; vertical-align: middle; border-radius: 1px; }
+#legend .ent-scale { display: inline-flex; align-items: center; gap: 6px; }
+#legend .ent-bar { width: 120px; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, rgb(123, 63, 196), rgb(38, 140, 84), rgb(140, 255, 110)); }
+body:not(.ent) #legend .ent-scale { display: none; }
+
+#fxCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+
+body.presentation #controls { display: none; }
+body.layout-row { --cols: 8; }
+@media (max-width: 1100px) { :root { --cols: 2; } }
+@media (prefers-reduced-motion: reduce) { .step.new { animation: none; } #board .bar { transition: none; } }

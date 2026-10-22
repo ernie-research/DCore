@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specforge"
+dynamic = ["version"]
+readme = "README.md"
+requires-python = "==3.12.*"
+description = "SpecForge: Speculative Decoding Training Framework"
+authors = [{name = "SGLang Team"}]
+urls = {Homepage = "https://github.com/sgl-project/SpecForge"}
+dependencies = [
+    "transformers==5.8.1",
+    "flashinfer-cubin==0.6.12",
+    "numpy==1.26.4",
+    "safetensors==0.8.0",
+    "datasets==4.8.5",
+    "accelerate==1.14.0",
+    "sglang-kernel==0.4.4+specforge",
+    "apache-tvm-ffi==0.1.10",
+    "pydantic",
+    "pyyaml",
+    "tqdm",
+    "wandb",
+    "psutil",
+    "ninja",
+    "packaging",
+    "yunchang",
+    "tensorboard",
+    "openai-harmony",
+    "qwen-vl-utils",
+    "sglang",
+]
+
+[project.scripts]
+specforge = "specforge.cli:main"
+
+[tool.setuptools.packages.find]
+exclude = ["configs*", "scripts*", "tests*"]
+
+[project.optional-dependencies]
+cu12 = [
+    "torch==2.9.1",
+    "torchvision==0.24.1",
+    "triton==3.5.1",
+    "flashinfer-python[cu12]==0.6.12",
+]
+cu13 = [
+    "torch>=2.11,<2.14",
+    "torchvision>=0.26",
+    "triton>=3.5.1",
+    "flashinfer-python[cu13]>=0.6.12",
+]
+dev = [
+    "pre-commit",
+    "pytest==8.3.4",
+]
+fa = ["flash-attn"]
+
+[tool.setuptools.dynamic]
+version = {file = "version.txt"}
+
+[tool.uv]
+conflicts = [
+    [
+        { extra = "cu12" },
+        { extra = "cu13" },
+    ],
+]
+
+[tool.uv.sources]
+sglang = { path = "third_party/sglang/python", editable = true }
+sglang-kernel = { path = "third_party/sglang/sgl-kernel" }
+
+[[tool.uv.index]]
+name = "pypi-mirror"
+url = "https://mirrors.cloud.tencent.com/pypi/simple/"
+default = true
