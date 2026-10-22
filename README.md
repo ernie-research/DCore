@@ -2,6 +2,8 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2610.24993-b31b1b.svg)](https://arxiv.org/abs/2610.24993)
 
+https://github.com/user-attachments/assets/0ad6f343-343d-44a2-9c13-20b9651deb3c
+
 **English** | [中文介绍](README.zh-CN.md)
 
 This repository accompanies **When Does Better Acceptance Pay? A Controlled Study of Speculative Decoding**.
